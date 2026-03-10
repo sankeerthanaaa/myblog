@@ -1,5 +1,6 @@
 import exp from 'express'
 import { UserTypeModel } from '../models/UserTypeModel.js';
+import { verifyToken } from '../middlewares/verifyToken.js';
 
 export const adminRoute = exp.Router()
 
@@ -10,7 +11,7 @@ adminRoute.get('/articles/:authorId',async(req,res)=>{
         res.status(201).json({ message:"articles",payload:articles});
 })
 //Block users
-adminRoute.put('/block/:userId',async(req,res)=>{
+adminRoute.put('/block/:userId',verifyToken("ADMIN"),async(req,res)=>{
     let uid=req.params.userId;
     let { email,password,role,isActive }=req.body;
     let blockedUser= await UserTypeModel.findByIdAndUpdate(
@@ -23,7 +24,7 @@ adminRoute.put('/block/:userId',async(req,res)=>{
     res.json({message:"user are blocked",payload:blockedUser})
 })
 // unblock Any user
-adminRoute.put('/unblock/:userId',async(req,res)=>{
+adminRoute.put('/unblock/:userId',verifyToken("ADMIN"),async(req,res)=>{
     let uid=req.params.userId;
     let { email,password,role,isActive }=req.body;
     let unblockedUser= await UserTypeModel.findByIdAndUpdate(

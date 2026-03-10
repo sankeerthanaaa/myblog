@@ -7,7 +7,7 @@ const UserCommentSchema = new Schema({
         ref : 'User',
         required : true
     },
-    comments:{
+    comment:{
         type : String
     }
 })

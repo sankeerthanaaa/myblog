@@ -10,9 +10,9 @@ console.log(data)
 
 return(
 
-<div className="flex justify-center items-center min-h-screen bg-slate-100">
+<div className="flex justify-center items-center min-h-screen bg-slate-100 text-amber-950">
 
-<form onSubmit={handleSubmit(onSubmit)} className="bg-teal-50 p-8 w-96 shadow-md rounded">
+<form onSubmit={handleSubmit(onSubmit)} className="bg-stone-100 p-8 w-96 shadow-md rounded">
 
 <h2 className="text-xl font-bold text-center mb-4">Add Article</h2>
 
@@ -50,7 +50,7 @@ className="w-full border p-2 mb-4 rounded"
 <p className="text-red-500 text-sm">{errors.content?.message}</p>
 
 
-<button className="bg-teal-500 hover:bg-teal-600 text-white w-full py-2 rounded">
+<button className="bg-stone-500 hover:bg-stone-600 text-white w-full py-2 rounded">
 Publish Article
 </button>
 

@@ -18,7 +18,7 @@ authorRoute.post('/users',async (req ,res )=> {
    
 })*/
 //create article(protected)
-authorRoute.post('/articles',async(req,res)=>{
+authorRoute.post('/articles',verifyToken("AUTHOR"),async(req,res)=>{
     //get article from rewq
     let article=req.body;
     //check author
@@ -40,7 +40,7 @@ authorRoute.get('/articles/:authorId',async(req,res)=>{
     //check the author
     let author=await UserTypeModel.findById(newAuthorId)
     if(!author|| author.role!="AUTHOR"){
-        res.status(401).json({"message":"invalid author"})
+        return res.status(401).json({"message":"invalid author"})
     }
     //read articles
     let newArticle=await ArticleModel.find({author:newAuthorId})
@@ -49,15 +49,16 @@ authorRoute.get('/articles/:authorId',async(req,res)=>{
 })
 //editarticle(protected)
 //edit article(protected route)
-authorRoute.put("/articles",verifyToken ,checkAuthor,async (req, res) => {
+authorRoute.put("/articles", verifyToken("AUTHOR"),checkAuthor, async (req, res) => {
   //get modified article from req
-  let { articleId, title, category, content,author } = req.body;
+  let { articleId, title, category, content } = req.body;
+  let authorId = req.user.userId;
   //find article
-  let articleOfDB = await ArticleModel.findOne({_id:articleId,author:author});
+  let articleOfDB = await ArticleModel.findOne({ _id: articleId, author: authorId });
   if (!articleOfDB) {
     return res.status(401).json({ message: "Article not found" });
   }
-  
+
   //update the article
   let updatedArticle = await ArticleModel.findByIdAndUpdate(
     articleId,
@@ -70,3 +71,39 @@ authorRoute.put("/articles",verifyToken ,checkAuthor,async (req, res) => {
   res.status(200).json({ message: "article updated", payload: updatedArticle });
 });
 //soft delete article(protected)
+//delete(soft delete) article(Protected route)
+authorRoute.patch("/articles/:id/status", verifyToken("AUTHOR"), async (req, res) => {
+  const { id } = req.params;
+  const { isArticleActive } = req.body;
+  // Find article
+  const article = await ArticleModel.findById(id); //.populate("author");
+  //console.log(article)
+  if (!article) {
+    return res.status(404).json({ message: "Article not found" });
+  }
+
+  //console.log(req.user.userId,article.author.toString())
+  // AUTHOR can only modify their own articles
+  if (req.user.role === "AUTHOR" && 
+    article.author.toString() !== req.user.userId) {
+    return res
+    .status(403)
+    .json({ message: "Forbidden. You can only modify your own articles" });
+  }
+  // Already in requested state
+  if (article.isArticleActive === isArticleActive) {
+    return res.status(400).json({
+      message: `Article is already ${isArticleActive ? "active" : "deleted"}`,
+    });
+  }
+
+  //update status
+  article.isArticleActive = isArticleActive;
+  await article.save();
+
+  //send res
+  res.status(200).json({
+    message: `Article ${isArticleActive ? "restored" : "deleted"} successfully`,
+    article,
+  });
+});

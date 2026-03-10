@@ -1,0 +1,54 @@
+### User Register
+POST http://localhost:4000/user-api/users
+Content-Type: application/json
+
+{
+  "firstName": "sammy",
+  "lastName": "luna",
+  "email": "sam6@mail.com",
+  "password": "sam@246",
+  "ProfileImageUrl": "https://example.com/avatars/user.png"
+}
+
+### User Login
+POST http://localhost:4000/common-api/login
+Content-Type: application/json
+
+{
+  "email": "sam6@mail.com",
+  "password": "sammy@246"
+  
+}
+
+### User read all articles
+GET http://localhost:4000/user-api/articles
+
+
+### user add comments
+PUT  http://localhost:4000/user-api/articles
+Content-Type: application/json
+
+{
+  "user":"6989ef4eb3acfbbf9f926145",
+  "articleId":"6989f222a6212138f1ee0bde",
+  "comment":"good article"
+}
+
+
+### Logout
+post http://localhost:4000/common-api/logout
+
+
+
+###changing password
+PUT http://localhost:4000/common-api/change-password
+Content-Type: application/json
+
+{
+  "role":"USER",
+  "email":"sam6@mail.com",
+  "currentPassword": "sammy@123",
+  "newPassword":"sammy@246"
+}
+
+

@@ -18,15 +18,24 @@ userRoute.post('/users',async (req ,res )=> {
 
 
 //Read all articles(protected )
-userRoute.get('/articles',verifyToken,async(req,res)=>{
+userRoute.get('/articles',verifyToken("USER"),async(req,res)=>{
     //read article
-    const articles=await ArticleModel.find();
+    const articles=await ArticleModel.find({isArticleActive:true});
     res.status(201).json({ message:"articles",payload:articles});
 })
 
 //Add comment to an article(protected)
 
-userRoute.post('/user-api/articles/:articleId/comments',async(req,res)=>{
-    let uid=req.params.userId;
-    //let newComment=
-})
+userRoute.put('/articles',verifyToken("USER"),async(req,res)=>{
+    const { user,articleId,comments }=req.body;
+    let articlewithComment =await ArticleModel.findByIdAndUpdate(
+        articleId,
+        {$push:{comments:{user,comments}}},
+        {new:true,runValidators:true},
+    );
+    //if article not found
+    if(!articlewithComment){
+        return res.status(404).json({message:"articel nor found"})
+    }
+    res.status(200).json({message:"comment added successfully"})
+});

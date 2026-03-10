@@ -1,0 +1,37 @@
+### admin log in
+POST http://localhost:4000/common-api/login
+Content-Type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "admin"
+  
+}
+### blocking user
+PUT  http://localhost:4000/admin-api/block/69ae86673d6f1e2cc6c73c70
+Content-Type: application/json
+
+{
+  
+"email":"sam6@mail.com",
+"password":"sam@246",
+"role":"USER",
+"isActive":true
+
+}
+
+###unblocking user
+PUT  http://localhost:4000/admin-api/unblock/69ae86673d6f1e2cc6c73c70
+Content-Type: application/json
+
+{
+  
+"email":"sam@mail.com",
+"password":"$2b$10$I6P.Om1auS6fOcQRG.dNTeg8lg.WUKqQcPBIv5r5hdzWw9xanFsT6",
+"role":"USER",
+"isActive":true
+
+}
+
+### Logout
+post http://localhost:4000/common-api/logout
