@@ -1,12 +1,66 @@
+import { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
-
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 function Register(){
 
 const {register,handleSubmit,formState:{errors}} = useForm();
+const [loading,setLoading]=useState(false)
+const [error,setError]=useState(null)
+const navigate=useNavigate();
+const [preview,setPreview]=useState(null)
+//const []=useState()
 
-const onSubmit=(data)=>{
-console.log(data)
+const onSubmit=async(newUser)=>{
+console.log(newUser)
+// Create form data object
+        const formData = new FormData();
+        //get user object
+        let { role, profileImageUrl, ...userObj } = newUser;
+        //add all fields except profilePic to FormData object
+        Object.keys(userObj).forEach((key) => {
+        formData.append(key, userObj[key]);
+        });
+        // add profilePic to Formdata object
+        formData.append("profileImageUrl", profileImageUrl[0]);
+try{
+    let {role,...userObj}=newUser
+//make API req
+if(role==="USER"){
+    let resObj=await axios.post("http://localhost:4000/user-api/users",formData)
+    console.log("resobj:",resObj)
+    // let res=resObj.data;
+    // console.log("res:",res)
+    if(resObj.status===201){
+        navigate("/login")
+    }
 }
+if(role==="AUTHOR"){
+    let resObj=await axios.post("http://localhost:4000/author-api/users",formData)
+    console.log("resobj:",resObj)
+    // let res=resObj.data;
+    // console.log("res:",res)
+    if(resObj.status===201){
+        navigate("/login")
+    }
+}
+}
+catch(err){
+    console.log(err)
+
+    setError(err.response?.data?.error || "registration failed")
+}
+finally {
+    setLoading(false)
+}
+}
+useEffect(() => {
+        return () => {
+            if (preview) {
+                URL.revokeObjectURL(preview);
+            }
+        };
+        }, [preview]);
 
 return(
 
@@ -89,13 +143,44 @@ message:"Password must be at least 6 characters"
 
 
 {/* IMAGE */}
-
+<div>
 <input
-type="file"
-className="w-full border p-2 mb-4 rounded"
-{...register("ProfileImageUrl")}
-/>
+        type="file"
+        accept="image/png, image/jpeg"
+        className="w-full border p-2 mb-2 rounded "
+        {...register("profileImageUrl")}
+        onChange={(e) => {
 
+            //get image file
+            const file = e.target.files[0];
+            // validation for image format
+            if (file) {
+                if (!["image/jpeg", "image/png"].includes(file.type)) {
+                setError("Only JPG or PNG allowed");
+                return;
+                }
+                //validation for file size
+                if (file.size > 2 * 1024 * 1024) {
+                setError("File size must be less than 2MB");
+                return;
+                }
+                //Converts file → temporary browser URL(create preview URL)
+                const previewUrl = URL.createObjectURL(file);
+                setPreview(previewUrl);
+                setError(null);
+            }
+
+        }} />
+        {preview && (
+                <div className="mt-3 flex justify-center">
+                <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover rounded-full border"
+                />
+                </div>
+            )}
+</div>
 
 <button className="bg-stone-500 hover:bg-stone-600 text-white w-full py-2 rounded">
 Register

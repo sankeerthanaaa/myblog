@@ -1,12 +1,34 @@
 import {useForm} from "react-hook-form";
-
+import axios from "axios";
+import { useAuth } from "../store/authStore";
+import { useNavigate } from "react-router";
 function AddArticle(){
 
 const {register,handleSubmit,formState:{errors}} = useForm();
+const currentUser = useAuth(state => state.currentUser)
+const navigate = useNavigate()
 
-const onSubmit=(data)=>{
-console.log(data)
-}
+const onSubmit = async (data) => {
+  try {
+    const articleData = {
+      ...data,
+      author: currentUser._id
+    };
+
+    let res = await axios.post(
+      "http://localhost:4000/author-api/articles",
+      articleData,
+      { withCredentials: true }
+    );
+
+    console.log(res.data);
+
+    navigate("/author-profile");
+
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 return(
 

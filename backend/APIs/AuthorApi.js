@@ -5,14 +5,49 @@ import { checkAuthor } from '../middlewares/checkAuthor.js';
 import { ArticleModel } from '../models/Articlemodel.js';
 import { UserTypeModel } from '../models/UserTypeModel.js';
 import { register } from '../services/authService.js';
+import { upload } from '../config/multer.js';
+import { uploadToCloudinary } from '../config/cloudinaryUpload.js';
 export const authorRoute = exp.Router()
 
 //Register author(public)
-authorRoute.post('/users',async (req ,res )=> {
-    let userObj=req.body;
-    const newUserObj=await register({...userObj,role:"AUTHOR"});
-    res.status(201).json({message:"author created ",payload:newUserObj})
-});
+authorRoute.post(
+        "/users",
+        upload.single("profileImageUrl"),
+        async (req, res, next) => {
+        let cloudinaryResult;
+
+            try {
+                let userObj = req.body;
+
+                //  Step 1: upload image to cloudinary from memoryStorage (if exists)
+                if (req.file) {
+                cloudinaryResult = await uploadToCloudinary(req.file.buffer);
+                }
+
+                // Step 2: call existing register()
+                const newUserObj = await register({
+                ...userObj,
+                role: "USER",
+                profileImageUrl: cloudinaryResult?.secure_url,
+                });
+
+                res.status(201).json({
+                message: "user created",
+                payload: newUserObj,
+                });
+
+            } catch (err) {
+
+                // Step 3: rollback 
+                if (cloudinaryResult?.public_id) {
+                await cloudinary.uploader.destroy(cloudinaryResult.public_id);
+                }
+
+                next(err); // send to your error middleware
+            }
+
+        }
+        );
 //authenticate (public)
 /*authorRoute.post("/login",async(req,res)=>{
    
@@ -34,9 +69,9 @@ authorRoute.post('/articles',verifyToken("AUTHOR"),async(req,res)=>{
     res.json({"message":"articles",payload:newArticle})
 })
 //read articles of author (he can read only his articles)(protected)
-authorRoute.get('/articles/:authorId',async(req,res)=>{
+authorRoute.get('/articles/:authorId',verifyToken("AUTHOR"),async(req,res)=>{
     //read article
-    let newAuthorId=req.params.authorId;
+    let newAuthorId=req.params?.authorId;
     //check the author
     let author=await UserTypeModel.findById(newAuthorId)
     if(!author|| author.role!="AUTHOR"){

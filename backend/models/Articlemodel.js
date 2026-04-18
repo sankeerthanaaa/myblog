@@ -1,16 +1,20 @@
 import { Schema ,model } from "mongoose";
 
 //user comment schema 
-const UserCommentSchema = new Schema({
-    user : {
-        type : Schema.Types.ObjectId,
-        ref : 'User',
-        required : true
+const UserCommentSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
-    comment:{
-        type : String
+    comment: {
+      type: String,
+      required: true
     }
-})
+  },
+  { timestamps: true }
+);
 
 const ArticleSchema = new Schema ({
     author:{

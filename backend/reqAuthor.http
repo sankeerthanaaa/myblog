@@ -26,8 +26,8 @@ POST http://localhost:4000/author-api/articles
 Content-Type: application/json
 
 {
-  "author":"69ae8de4afc1f47f53df9f14",
-  "title":"test2 article",
+  "author":"69b434d17af5d453375ad443",
+  "title":"sam 1 article",
   "category":"programming",
   "content":"content of test2 article"
 }
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 
 ###Read articles of a author
-GET http://localhost:4000/author-api/articles/6989ef4eb3acfbbf9f926145
+GET http://localhost:4000/author-api/articles/69b434d17af5d453375ad443
 
 
 
@@ -44,11 +44,11 @@ PUT http://localhost:4000/author-api/articles
 Content-Type: application/json
 
 {
-  "author":"69ae8de4afc1f47f53df9f14",
-  "articleId":"69aeda9d73dfcedbdb6a4483",
-  "title":"test2 article updated",
+  "author":"69b434d17af5d453375ad443",
+  "articleId":"69b435377af5d453375ad448",
+  "title":"The Art of Writing Clean Code",
   "category":"programming",
-  "content":"content of test2 article updated"
+  "content":"Programming is not just about making the computer run instructions. It is about solving problems in the most efficient and understandable way possible. Many beginners focus only on making their code work, but experienced developers understand that writing clean and readable code is just as important as writing functional code."
 }
 ### delete article
 PATCH http://localhost:4000/author-api/articles/69ae8fd8170e0d5d18e82687/status

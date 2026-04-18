@@ -1,19 +1,21 @@
 import exp from 'express'
 import mongoose from 'mongoose'
-import { config } from 'dotenv'
+// import { config } from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { userRoute } from './APIs/UserApi.js'
 import { authorRoute } from './APIs/AuthorApi.js'
 import { adminRoute } from './APIs/AdminApi.js'
 import { commonRouter } from './APIs/CommonAPI.js'
 import cors from 'cors';
-config() // loads .env into process.env
+import dotenv from "dotenv";
+dotenv.config();
+// config() // loads .env into process.env
 
 
 const app = exp()
 
 //cors middleware
-app.use(cors({origin:['http://localhost:5173']}))
+app.use(cors({origin:['http://localhost:5173'],credentials:true}))
 // body parser
 app.use(exp.json())
 app.use(cookieParser())
@@ -25,12 +27,14 @@ app.use('/common-api',commonRouter)
 // database connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.DB_URL)
+    await mongoose.connect(process.env.MONGO_URI)
     console.log("DB connection success")
 
-    app.listen(process.env.PORT, () =>
-      console.log(`Server started on port ${process.env.PORT}`)
-    )
+    const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () =>
+  console.log(`Server started on port ${PORT}`)
+);
   } catch (err) {
     console.log("Err in DB connection", err)
   }
@@ -42,52 +46,51 @@ app.use((req,res,next)=>{
   res.json({message: `${req.url} + is Invalid path`})
 })
 
-//error handling middleware
 app.use((err, req, res, next) => {
-  const status = err.status || err.statusCode || 500;
-  const isProduction = process.env.NODE_ENV === "production";
 
-  let message = err.message || "Unexpected error";
-  let details;
+  console.log("Error name:", err.name);
+  console.log("Error code:", err.code);
+  console.log("Full error:", err);
 
-  // Mongoose validation errors
+  // mongoose validation error
   if (err.name === "ValidationError") {
-    message = "Validation error";
-    details = Object.values(err.errors || {}).map((e) => e.message);
+    return res.status(400).json({
+      message: "error occurred",
+      error: err.message,
+    });
   }
 
-  // Mongoose cast errors (e.g. invalid ObjectId)
+  // mongoose cast error
   if (err.name === "CastError") {
-    message = "Invalid value for field";
-    details = [`${err.path} is invalid`];
+    return res.status(400).json({
+      message: "error occurred",
+      error: err.message,
+    });
   }
 
-  // Duplicate key errors
-  if (err.code === 11000) {
-    message = "Duplicate value";
-    const fields = Object.keys(err.keyValue || {});
-    details = fields.length ? fields.map((f) => `${f} already exists`) : undefined;
+  const errCode = err.code ?? err.cause?.code ?? err.errorResponse?.code;
+  const keyValue = err.keyValue ?? err.cause?.keyValue ?? err.errorResponse?.keyValue;
+
+  if (errCode === 11000) {
+    const field = Object.keys(keyValue)[0];
+    const value = keyValue[field];
+    return res.status(409).json({
+      message: "error occurred",
+      error: `${field} "${value}" already exists,`
+    });
   }
 
-  // Strict mode "throw" errors from schema
-  if (err.name === "StrictModeError") {
-    message = "Invalid fields provided";
-    details = err.path ? [`${err.path} is not allowed`] : undefined;
+  // ✅ HANDLE CUSTOM ERRORS
+  if (err.status) {
+    return res.status(err.status).json({
+      message: "error occurred",
+      error: err.message,
+    });
   }
 
-  // Default to 400 for known client errors without explicit status
-  const finalStatus = status === 500 && (err.name || err.code) ? 400 : status;
-
-  const response = {
-    message,
-    status: finalStatus,
-  };
-
-  if (details) response.details = details;
-  if (!isProduction) {
-    response.stack = err.stack;
-  }
-
-  console.log("err :", err);
-  res.status(finalStatus).json(response);
+  // default server error
+  res.status(500).json({
+    message: "error occurred",
+    error: "Server side error",
+  });
 });
