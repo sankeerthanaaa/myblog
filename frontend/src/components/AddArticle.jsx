@@ -16,7 +16,7 @@ const onSubmit = async (data) => {
     };
 
     let res = await axios.post(
-      "http://localhost:4000/author-api/articles",
+      `${process.env.REACT_APP_API_URL}/author-api/articles`,
       articleData,
       { withCredentials: true }
     );

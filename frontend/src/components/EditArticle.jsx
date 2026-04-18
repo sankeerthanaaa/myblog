@@ -22,7 +22,7 @@ function EditArticle() {
   const onSubmit = async (data) => {
   try {
     await axios.put(
-      `http://localhost:4000/author-api/articles/${article._id}`,
+      `${process.env.REACT_APP_API_URL}/author-api/articles/${article._id}`,
       data,
       { withCredentials: true }
     );

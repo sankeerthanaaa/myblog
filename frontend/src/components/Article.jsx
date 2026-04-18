@@ -71,7 +71,7 @@ function Article() {
   const addComment = async (data) => {
   try {
     const res = await axios.put(
-      "http://localhost:4000/user-api/articles",
+      `${process.env.REACT_APP_API_URL}/user-api/articles`,
       {
         articleId: id,
         comment: data.comment
@@ -79,7 +79,7 @@ function Article() {
       { withCredentials: true }
     );
 
-    setArticle(res.data.payload); // ✅ now exists
+    setArticle(res.data.payload); // now exists
     reset();
     toast.success(res.data.message);
   } catch (err) {
