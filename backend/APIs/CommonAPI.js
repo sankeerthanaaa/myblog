@@ -12,11 +12,12 @@ commonRouter.post('/login', async (req, res, next) => {
 
     let { token, user } = await authenticate(userCred);
 
+    
     res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: false,
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+});
 
     res.status(200).json({
       message: "login success",

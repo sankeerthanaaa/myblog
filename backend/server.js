@@ -15,8 +15,14 @@ dotenv.config();
 const app = exp()
 
 //cors middleware
-app.use(cors({origin:['http://localhost:5173'],credentials:true}))
-// body parser
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://myblog-five-nu.vercel.app"
+  ],
+  credentials: true
+}));// body parser
 app.use(exp.json())
 app.use(cookieParser())
 // routes
