@@ -24,6 +24,10 @@ app.use('/user-api', userRoute)
 app.use('/author-api', authorRoute)
 app.use('/admin-api', adminRoute)
 app.use('/common-api',commonRouter)
+//test
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully 🚀");
+});
 // database connection
 const connectDB = async () => {
   try {
