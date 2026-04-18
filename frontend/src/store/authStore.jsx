@@ -15,7 +15,7 @@ export const useAuth=create((set)=>({
             //set auth loading true
             set({authLoading:true,error:null})
             //make api call
-            let res =await axios.post(`${process.env.REACT_APP_API_URL}/common-api/login`,userCred,{withCredentials:true});
+            let res =await axios.post(`${import.meta.env.VITE_API_URL}/common-api/login`,userCred,{withCredentials:true});
             console.log("res :",res);
             //update state
             set({
@@ -40,7 +40,7 @@ export const useAuth=create((set)=>({
             //set auth loading state
             set({authLoading:true,error:null})
             //make logout api
-            let res = await axios.post(`${process.env.REACT_APP_API_URL}/common-api/logout`,{withCredentials:true});
+            let res = await axios.post(`${import.meta.env.VITE_API_URL}/common-api/logout`,{withCredentials:true});
 
             //update state
             set({
@@ -63,7 +63,7 @@ export const useAuth=create((set)=>({
         try{
             set({articlesLoading:true,error:null})
             //make read req
-            let res =await axios.get(`${process.env.REACT_APP_API_URL}/user-api/articles`,{withCredentials:true})
+            let res =await axios.get(`${import.meta.env.VITE_API_URL}/user-api/articles`,{withCredentials:true})
             console.log(res.data.payload)
             set({
                 articlesLoading:false,
@@ -84,7 +84,7 @@ export const useAuth=create((set)=>({
         try{
             set({articlesLoading:true,error:null})
             //make read req
-            let res =await axios.get(`${process.env.REACT_APP_API_URL}/author-api/articles/${authorId}`,{withCredentials:true})
+            let res =await axios.get(`${import.meta.env.VITE_API_URL}/author-api/articles/${authorId}`,{withCredentials:true})
             
             console.log(res.data.payload)
             set({
@@ -106,7 +106,7 @@ export const useAuth=create((set)=>({
   checkAuth: async () => {
     try {
       set({ loading: true });
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/common-api/check-auth`, { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/common-api/check-auth`, { withCredentials: true });
         //console.log("Auth check response:", res);
       set({
         currentUser: res.data.payload,

@@ -28,7 +28,7 @@ function Article() {
       setLoading(true);
       try {
         const res = await axios.get(
-          `http://localhost:4000/user-api/article/${id}`,
+          `${import.meta.env.VITE_API_URL}/user-api/article/${id}`,
           { withCredentials: true }
         );
         setArticle(res.data.payload);
@@ -56,7 +56,7 @@ function Article() {
 
     try {
       const res = await axios.patch(
-        `http://localhost:4000/author-api/articles/${id}/status`,
+        `${import.meta.env.VITE_API_URL}/author-api/articles/${id}/status`,
         { isArticleActive: newStatus },
         { withCredentials: true }
       );
@@ -71,7 +71,7 @@ function Article() {
   const addComment = async (data) => {
   try {
     const res = await axios.put(
-      `${process.env.REACT_APP_API_URL}/user-api/articles`,
+      `${import.meta.env.VITE_API_URL}/user-api/articles`,
       {
         articleId: id,
         comment: data.comment

@@ -27,7 +27,7 @@ try{
     let {role,...userObj}=newUser
 //make API req
 if(role==="USER"){
-    let resObj=await axios.post(`${process.env.REACT_APP_API_URL}/user-api/users`,formData)
+    let resObj=await axios.post(`${import.meta.env.VITE_API_URL}/user-api/users`,formData)
     console.log("resobj:",resObj)
     // let res=resObj.data;
     // console.log("res:",res)
@@ -36,7 +36,7 @@ if(role==="USER"){
     }
 }
 if(role==="AUTHOR"){
-    let resObj=await axios.post(`${process.env.REACT_APP_API_URL}/author-api/users`,formData)
+    let resObj=await axios.post(`${import.meta.env.VITE_API_URL}/author-api/users`,formData)
     console.log("resobj:",resObj)
     // let res=resObj.data;
     // console.log("res:",res)

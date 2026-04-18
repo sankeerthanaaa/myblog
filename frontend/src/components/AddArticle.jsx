@@ -16,7 +16,7 @@ const onSubmit = async (data) => {
     };
 
     let res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/author-api/articles`,
+      `${import.meta.env.VITE_API_URL}/author-api/articles`,
       articleData,
       { withCredentials: true }
     );
