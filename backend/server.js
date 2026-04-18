@@ -35,20 +35,22 @@ app.get("/", (req, res) => {
   res.send("Backend is running successfully 🚀");
 });
 // database connection
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
+
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI)
-    console.log("DB connection success")
-
-    const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () =>
-  console.log(`Server started on port ${PORT}`)
-);
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("DB connection success");
   } catch (err) {
-    console.log("Err in DB connection", err)
+    console.log("Err in DB connection", err);
   }
-}
+};
+
+connectDB();
 
 connectDB()
 //dealing with invalid path
